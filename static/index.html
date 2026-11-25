@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daylight · 向阳 — 把每个今天，长成明天的力量</title>
+<meta name="description" content="Daylight 向阳：把今天的小目标拆成下一步，记录行动与收获，每天长出一株真实的经验。">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="sun-glow" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="10" fill="#F9822F"/>
+      <g stroke="#F5B365" stroke-width="3" stroke-linecap="round">
+        <path d="M24 3v6M24 39v6M3 24h6M39 24h6M9 9l4 4M35 35l4 4M39 9l-4 4M13 35l-4 4"/>
+      </g>
+    </svg>
+    <div>
+      <h1>Daylight · 向阳</h1>
+      <p class="tagline">把每个今天，长成明天的力量</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="mode-badge" class="badge badge-local">本地模式</span>
+    <span id="today-badge" class="badge badge-soft">加载中…</span>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="主导航">
+  <button class="tab is-active" data-view="today" aria-current="page">今日</button>
+  <button class="tab" data-view="log">行动记录</button>
+  <button class="tab" data-view="garden">经验花园</button>
+  <button class="tab" data-view="about">关于持久性</button>
+</nav>
+
+<main>
+  <!-- 今日 -->
+  <section id="view-today" class="view is-active" aria-labelledby="today-heading">
+    <div class="panel-head">
+      <h2 id="today-heading">今天的 1–3 个小目标</h2>
+      <p class="hint" id="today-date"></p>
+    </div>
+
+    <div class="progress-card">
+      <div class="progress-ring" id="progress-ring" role="img" aria-label="今日完成进度">
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-copy">
+        <p id="progress-line" class="progress-line">今天还没开始，先从一个小目标起步。</p>
+        <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+        <p class="hint" id="streak-line"></p>
+      </div>
+    </div>
+
+    <ul id="goal-list" class="goal-list" aria-live="polite"></ul>
+    <p id="goal-empty" class="empty">今天还没有目标。写下一个就够，小小的也算。</p>
+
+    <form id="goal-form" class="card form-card">
+      <label for="goal-input">添加一个小目标</label>
+      <div class="row">
+        <input id="goal-input" name="text" type="text" maxlength="200"
+               placeholder="例如：把周报的开头写出来" autocomplete="off" required>
+        <button type="submit" class="btn btn-primary">加进今天</button>
+      </div>
+      <p class="hint">一句话就好。Daylight 会给出第一个可以马上做的动作。</p>
+    </form>
+
+    <section class="card">
+      <h3>下一步建议</h3>
+      <ul id="next-steps" class="next-steps"></ul>
+    </section>
+
+    <section class="card">
+      <h3>今日经验卡</h3>
+      <p class="hint">只用今天真实的目标和行动记录生成，没有记录就不写成绩。</p>
+      <div class="row">
+        <button id="reflect-btn" class="btn btn-leaf" type="button">生成今日经验卡</button>
+      </div>
+      <pre id="card-body" class="card-body" hidden></pre>
+    </section>
+  </section>
+
+  <!-- 行动记录 -->
+  <section id="view-log" class="view" aria-labelledby="log-heading" hidden>
+    <div class="panel-head">
+      <h2 id="log-heading">行动记录</h2>
+      <p class="hint">写下「我做了什么 / 我学到什么」。这两行就是明天的起点。</p>
+    </div>
+
+    <form id="checkin-form" class="card form-card">
+      <label for="did-input">我做了什么</label>
+      <textarea id="did-input" name="did" rows="3" maxlength="2000"
+                placeholder="例如：用 25 分钟改完了周报前三段" required></textarea>
+      <label for="learned-input">我学到什么（可选）</label>
+      <textarea id="learned-input" name="learned" rows="2" maxlength="2000"
+                placeholder="例如：先写骨架比先润色快得多"></textarea>
+      <div class="row">
+        <button type="submit" class="btn btn-primary">记下来</button>
+      </div>
+    </form>
+
+    <section class="card">
+      <h3>时间线</h3>
+      <ol id="timeline" class="timeline"></ol>
+      <p id="timeline-empty" class="empty">还没有记录。写下第一条，时间线就开始生长。</p>
+    </section>
+  </section>
+
+  <!-- 经验花园 -->
+  <section id="view-garden" class="view" aria-labelledby="garden-heading" hidden>
+    <div class="panel-head">
+      <h2 id="garden-heading">经验花园</h2>
+      <p class="hint">每天一株。记录越多，植株长得越完整。点开任意一株，看到的是那天真实的经验。</p>
+    </div>
+    <div class="garden" id="garden"></div>
+    <p id="garden-empty" class="empty">花园还是空的。今天的一个目标，就是第一粒种子。</p>
+  </section>
+
+  <!-- 关于持久性 -->
+  <section id="view-about" class="view" aria-labelledby="about-heading" hidden>
+    <div class="panel-head">
+      <h2 id="about-heading">关于持久性</h2>
+      <p class="hint">你的数据存在 Sprite 的持久磁盘上，进程重启不会丢。下面全部来自真实的健康检查。</p>
+    </div>
+    <section class="card">
+      <h3>存储</h3>
+      <dl class="facts">
+        <dt>数据目录</dt><dd id="fact-dir">—</dd>
+        <dt>数据库文件</dt><dd id="fact-db">—</dd>
+        <dt>文件大小</dt><dd id="fact-size">—</dd>
+        <dt>最近写入</dt><dd id="fact-lastwrite">—</dd>
+        <dt>记录条数</dt><dd id="fact-counts">—</dd>
+        <dt>服务时间</dt><dd id="fact-now">—</dd>
+        <dt>模型模式</dt><dd id="fact-connector">—</dd>
+      </dl>
+      <div class="row">
+        <button id="health-btn" class="btn btn-soft" type="button">刷新健康检查</button>
+        <a id="export-link" class="btn btn-leaf" href="/api/export.md" download="daylight-export.md">导出 Markdown</a>
+      </div>
+      <p class="hint">导出的 Markdown 可直接带走，换机器继续记录。</p>
+    </section>
+    <section class="card">
+      <h3>重启不丢的做法</h3>
+      <ul class="bullets">
+        <li>每次写入先 <code>COMMIT</code> 再返回 HTTP 响应，进程没有缓存状态。</li>
+        <li>数据库在持久磁盘 <code>/home/sprite/daylight-data</code>（本地开发为 <code>./data</code>）。</li>
+        <li>同一份数据库换进程、换机器都能继续读，导出文件是第二层备份。</li>
+      </ul>
+    </section>
+  </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<div id="plant-modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="plant-title">
+    <button id="plant-close" class="modal-close" type="button" aria-label="关闭">×</button>
+    <h3 id="plant-title">那一天</h3>
+    <div id="plant-body"></div>
+  </div>
+</div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

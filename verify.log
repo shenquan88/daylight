@@ -1,0 +1,395 @@
+Daylight · 向阳 — verification log
+host: WIN-CE3O4FOAUTE  dir: D:\ai-bridge\earn-work\hacksgiving-daylight
+
+================================================================
+### python version
+PS> python -c "import sys; print(sys.version)"
+at: 2026-11-25T08:03:09
+3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]
+exit code: 0
+
+================================================================
+### compile backend
+PS> python -m py_compile app.py store.py coach.py
+at: 2026-11-25T08:03:11
+exit code: 0
+
+================================================================
+### javascript syntax
+PS> node --check static\app.js
+at: 2026-11-25T08:03:12
+exit code: 0
+
+================================================================
+### unit tests (33)
+PS> python -m unittest discover -s tests -v
+at: 2026-11-25T08:03:13
+exit code: 0
+
+================================================================
+### end-to-end (real process, real HTTP, restart)
+PS> python scripts\e2e_check.py
+at: 2026-11-25T08:03:33
+=== Daylight end-to-end check ===
+python: 3.14.6
+data dir: D:\ai-bridge\earn-work\hacksgiving-daylight\data
+
+-- run 1: fresh process --
+    /api/health -> 200  db=D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db  bytes=102816
+[PASS] health reports a real sqlite file
+[PASS] GET / -> 200 html  ->  status=200
+[PASS] POST /api/goals -> 201  ->  id=1 next_step=先写三行，不求完整：只回答「第一句是什么」。
+[PASS] POST /api/goals (2nd) -> 201  ->  id=2
+[PASS] POST /api/goals/1/complete -> 200  ->  done=1 percent=50
+[PASS] POST /api/checkins -> 201
+[PASS] POST /api/checkins (2nd) -> 201
+[PASS] POST /api/reflect -> 201  ->  mode=local
+[PASS] card is grounded in real records
+[PASS] card has no invented achievement
+[PASS] GET /api/state -> 200  ->  goals=2 checkins=2 cards=1 streak=1
+[PASS] GET /api/export.md -> 200 markdown  ->  586 bytes
+[PASS] GET /api/health after writes -> 200
+[PASS] empty goal rejected -> 400
+[PASS] over-long goal rejected -> 400
+[PASS] missing goal -> 404
+    server stopped (exit code 1)
+
+-- run 2: restart, same data dir --
+    /api/health -> 200  db=D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db  bytes=176976  last_write=2026-11-25T08:03:35
+[PASS] goals survived restart  ->  goals=2
+[PASS] checkins survived restart  ->  checkins=2
+[PASS] cards survived restart  ->  cards=1
+[PASS] completion flag survived restart
+[PASS] streak survived restart  ->  streak=1
+[PASS] counts in health match  ->  {"goals": 2, "checkins": 2, "cards": 1}
+    server stopped (exit code 1)
+
+=== 0 failure(s) ===
+exit code: 0
+
+================================================================
+### UI screenshots + console check
+PS> python scripts\shots.py
+at: 2026-11-25T08:03:37
+mode badge : 本地模式
+today      : 2026年11月25日 · 星期三
+goals added: 2
+timeline items: 1
+progress: 50% | 已完成 1 个，还有 1 个在推进。
+card first line: 2026-11-25 · 今日经验卡
+db shown   : D:\ai-bridge\earn-work\hacksgiving-daylight\data-demo\daylight.db
+
+screenshots:
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\01-today-empty.png  (241605 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\02-today-after-record.png  (362513 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\03-garden.png  (164304 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\04-plant-detail.png  (141135 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\05-about-persistence.png  (243679 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\06-mobile-today.png  (612116 bytes)
+
+console problems: 0
+exit code: 0
+
+================================================================
+### deliverables
+PS> Get-ChildItem -Recurse -File | Where-Object { $_.FullName -notmatch "data(-demo|-diag)?\\\\" } | Select-Object FullName,Length | Sort-Object FullName | Format-Table -AutoSize | Out-String -Width 200
+at: 2026-11-25T08:03:55
+
+FullName                                                                               Length
+--------                                                                               ------
+D:\ai-bridge\earn-work\hacksgiving-daylight\__pycache__\app.cpython-314.pyc             19033
+D:\ai-bridge\earn-work\hacksgiving-daylight\__pycache__\coach.cpython-314.pyc           18460
+D:\ai-bridge\earn-work\hacksgiving-daylight\__pycache__\store.cpython-314.pyc           21593
+D:\ai-bridge\earn-work\hacksgiving-daylight\app.py                                      11461
+D:\ai-bridge\earn-work\hacksgiving-daylight\coach.py                                    11360
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-demo\daylight.db                        4096
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-demo\daylight.db-shm                   32768
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-demo\daylight.db-wal                  135992
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-diag\daylight.db                        4096
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-diag\daylight.db-shm                   32768
+D:\ai-bridge\earn-work\hacksgiving-daylight\data-diag\daylight.db-wal                   65952
+D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db                             4096
+D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db-shm                        32768
+D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db-wal                       140112
+D:\ai-bridge\earn-work\hacksgiving-daylight\README.md                                    8380
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\01-today-empty.png             241605
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\02-today-after-record.png      362513
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\03-garden.png                  164304
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\04-plant-detail.png            141135
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\05-about-persistence.png       243679
+D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\06-mobile-today.png            612116
+D:\ai-bridge\earn-work\hacksgiving-daylight\scripts\diag_dom.py                          2690
+D:\ai-bridge\earn-work\hacksgiving-daylight\scripts\diag_reflect.py                      2881
+D:\ai-bridge\earn-work\hacksgiving-daylight\scripts\e2e_check.py                         6924
+D:\ai-bridge\earn-work\hacksgiving-daylight\scripts\probe_browser.py                      527
+D:\ai-bridge\earn-work\hacksgiving-daylight\scripts\shots.py                             6923
+D:\ai-bridge\earn-work\hacksgiving-daylight\static\app.js                               18423
+D:\ai-bridge\earn-work\hacksgiving-daylight\static\favicon.svg                            476
+D:\ai-bridge\earn-work\hacksgiving-daylight\static\index.html                            7238
+D:\ai-bridge\earn-work\hacksgiving-daylight\static\styles.css                           13462
+D:\ai-bridge\earn-work\hacksgiving-daylight\store.py                                    11315
+D:\ai-bridge\earn-work\hacksgiving-daylight\tests\__pycache__\test_app.cpython-314.pyc  34061
+D:\ai-bridge\earn-work\hacksgiving-daylight\tests\test_app.py                           15536
+D:\ai-bridge\earn-work\hacksgiving-daylight\verify.log                                   4076
+
+
+exit code: 0
+
+================================================================
+### data dir after e2e
+PS> Get-ChildItem data -File | Select-Object Name,Length | Format-Table -AutoSize | Out-String
+at: 2026-11-25T08:03:55
+
+Name            Length
+----            ------
+daylight.db       4096
+daylight.db-shm  32768
+daylight.db-wal 140112
+
+
+exit code: 0
+
+================================================================
+### unit tests, per-test output (re-run after cleanup)
+PS> python -m unittest discover -s tests -v
+at: 2026-11-25T08:04:32
+test_checkin_appears_in_state (test_app.TestCheckins.test_checkin_appears_in_state) ... ok
+test_checkin_blank_rejected (test_app.TestCheckins.test_checkin_blank_rejected) ... ok
+test_checkin_too_long_rejected (test_app.TestCheckins.test_checkin_too_long_rejected) ... ok
+test_learned_is_optional_and_length_capped (test_app.TestCheckins.test_learned_is_optional_and_length_capped) ... ok
+test_encouragement_deterministic_per_day (test_app.TestCoaching.test_encouragement_deterministic_per_day) ... ok
+test_steps_are_deterministic (test_app.TestCoaching.test_steps_are_deterministic) ... ok
+test_connector_failure_falls_back_to_local (test_app.TestConnector.test_connector_failure_falls_back_to_local) ... ok
+test_connector_rewrites_card (test_app.TestConnector.test_connector_rewrites_card) ... ok
+test_from_env_needs_both_vars (test_app.TestConnector.test_from_env_needs_both_vars) ... ok
+test_gateway_list_parses_models (test_app.TestConnector.test_gateway_list_parses_models) ... ok
+test_garden_grows_with_activity (test_app.TestGarden.test_garden_grows_with_activity) ... ok
+test_streak_counts_consecutive_days (test_app.TestGarden.test_streak_counts_consecutive_days) ... ok
+test_absurd_goal_id_404 (test_app.TestGoals.test_absurd_goal_id_404) ... ok
+test_bad_json_rejected (test_app.TestGoals.test_bad_json_rejected) ... ok
+test_complete_goal_updates_progress (test_app.TestGoals.test_complete_goal_updates_progress) ... ok
+test_complete_missing_goal_404 (test_app.TestGoals.test_complete_missing_goal_404) ... ok
+test_create_goal_returns_step (test_app.TestGoals.test_create_goal_returns_step) ... ok
+test_goal_blank_rejected (test_app.TestGoals.test_goal_blank_rejected) ... ok
+test_goal_keyword_step_matches_kind (test_app.TestGoals.test_goal_keyword_step_matches_kind) ... ok
+test_goal_too_long_rejected (test_app.TestGoals.test_goal_too_long_rejected) ... ok
+test_goal_wrong_type_rejected (test_app.TestGoals.test_goal_wrong_type_rejected) ... ok
+test_non_numeric_goal_id_404 (test_app.TestGoals.test_non_numeric_goal_id_404) ... ok
+test_health_reports_storage (test_app.TestHealth.test_health_reports_storage) ... ok
+test_ignored_body_does_not_leak_into_next_request (test_app.TestKeepAlive.test_ignored_body_does_not_leak_into_next_request) ... ok
+test_index_page_served (test_app.TestPages.test_index_page_served) ... ok
+test_path_traversal_blocked (test_app.TestPages.test_path_traversal_blocked) ... ok
+test_static_assets_served (test_app.TestPages.test_static_assets_served) ... ok
+test_unknown_path_404 (test_app.TestPages.test_unknown_path_404) ... ok
+test_data_survives_process_restart (test_app.TestPersistence.test_data_survives_process_restart) ... ok
+test_health_last_write_advances (test_app.TestPersistence.test_health_last_write_advances) ... ok
+test_card_without_records_claims_nothing (test_app.TestReflectAndExport.test_card_without_records_claims_nothing) ... ok
+test_export_markdown_contains_everything (test_app.TestReflectAndExport.test_export_markdown_contains_everything) ... ok
+test_local_card_grounded_in_records (test_app.TestReflectAndExport.test_local_card_grounded_in_records) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 18.789s
+
+OK
+exit code: 0
+
+### screenshots (sha256)
+01-today-empty.png  3AEB8A9C54183D19B5F2693D01645ACBB139530005B7ED25C69B330F353F3900  241605 bytes
+02-today-after-record.png  E572C7ADA37DBE9CD17E6CCC95F90BDA91C8349958D896ED0C0F93F20DD017B1  362513 bytes
+03-garden.png  4AABD2A813C0A8DFB715B5E4A40C9B8D411F0E10B6525FFB5B58BB508794359A  164304 bytes
+04-plant-detail.png  1EEE558B83D2C2224A45E742CD2CE20EE996EF8B59E0CC1044380DF46D57F8AE  141135 bytes
+05-about-persistence.png  BD14446CD69F745A2C68C32F98CE1A7E8570A6C186F1B9048F046BD94A3DC423  243679 bytes
+06-mobile-today.png  648EAC053B7F5ED3F3096D3B7C678B50C3337DD105CC5AE89EB98195F38990D1  612116 bytes
+
+### final tree (excluding runtime data)
+app.py  11461
+coach.py  11360
+README.md  8380
+store.py  11315
+verify.log  12019
+screenshots\01-today-empty.png  241605
+screenshots\02-today-after-record.png  362513
+screenshots\03-garden.png  164304
+screenshots\04-plant-detail.png  141135
+screenshots\05-about-persistence.png  243679
+screenshots\06-mobile-today.png  612116
+scripts\diag_dom.py  2690
+scripts\diag_reflect.py  2881
+scripts\e2e_check.py  6924
+scripts\probe_browser.py  527
+scripts\shots.py  6923
+static\app.js  18423
+static\favicon.svg  476
+static\index.html  7238
+static\styles.css  13462
+tests\test_app.py  15536
+tests\__pycache__\test_app.cpython-314.pyc  34061
+__pycache__\app.cpython-314.pyc  19077
+__pycache__\coach.cpython-314.pyc  18504
+__pycache__\store.cpython-314.pyc  21637
+
+================================================================
+### final pass after dead-code removal (store.dump, coach_stages helper)
+at: 2026-11-25T08:07:30
+PS> python -m py_compile app.py store.py coach.py
+exit code: 0
+PS> node --check static\app.js
+exit code: 0
+PS> python -m unittest discover -s tests
+.................................
+----------------------------------------------------------------------
+Ran 33 tests in 19.263s
+
+OK
+exit code: 0
+PS> python scripts\e2e_check.py
+=== Daylight end-to-end check ===
+python: 3.14.6
+data dir: D:\ai-bridge\earn-work\hacksgiving-daylight\data
+
+-- run 1: fresh process --
+    /api/health -> 200  db=D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db  bytes=102816
+[PASS] health reports a real sqlite file
+[PASS] GET / -> 200 html  ->  status=200
+[PASS] POST /api/goals -> 201  ->  id=1 next_step=先写三行，不求完整：只回答「第一句是什么」。
+[PASS] POST /api/goals (2nd) -> 201  ->  id=2
+[PASS] POST /api/goals/1/complete -> 200  ->  done=1 percent=50
+[PASS] POST /api/checkins -> 201
+[PASS] POST /api/checkins (2nd) -> 201
+[PASS] POST /api/reflect -> 201  ->  mode=local
+[PASS] card is grounded in real records
+[PASS] card has no invented achievement
+[PASS] GET /api/state -> 200  ->  goals=2 checkins=2 cards=1 streak=1
+[PASS] GET /api/export.md -> 200 markdown  ->  586 bytes
+[PASS] GET /api/health after writes -> 200
+[PASS] empty goal rejected -> 400
+[PASS] over-long goal rejected -> 400
+[PASS] missing goal -> 404
+    server stopped (exit code 1)
+
+-- run 2: restart, same data dir --
+    /api/health -> 200  db=D:\ai-bridge\earn-work\hacksgiving-daylight\data\daylight.db  bytes=176976  last_write=2026-11-25T08:07:53
+[PASS] goals survived restart  ->  goals=2
+[PASS] checkins survived restart  ->  checkins=2
+[PASS] cards survived restart  ->  cards=1
+[PASS] completion flag survived restart
+[PASS] streak survived restart  ->  streak=1
+[PASS] counts in health match  ->  {"goals": 2, "checkins": 2, "cards": 1}
+    server stopped (exit code 1)
+
+=== 0 failure(s) ===
+exit code: 0
+
+### tree (excluding runtime data and pycache)
+app.py                                                  11461
+coach.py                                                11360
+README.md                                                8380
+store.py                                                11232
+verify.log                                              14965
+screenshots\01-today-empty.png                         241605
+screenshots\02-today-after-record.png                  362513
+screenshots\03-garden.png                              164304
+screenshots\04-plant-detail.png                        141135
+screenshots\05-about-persistence.png                   243679
+screenshots\06-mobile-today.png                        612116
+scripts\diag_dom.py                                      2690
+scripts\diag_reflect.py                                  2881
+scripts\e2e_check.py                                     6924
+scripts\probe_browser.py                                  527
+scripts\shots.py                                         6923
+static\app.js                                           18423
+static\favicon.svg                                        476
+static\index.html                                        7238
+static\styles.css                                       13462
+tests\test_app.py                                       15467
+
+================================================================
+### screenshots re-captured after adding a transition settle (garden was captured mid-fade)
+PS> python scripts\shots.py
+at: 2026-11-25T08:09:54
+mode badge : 本地模式
+today      : 2026年11月25日 · 星期三
+    shot 01-today-empty.png (viewport 1440x1000)
+goals added: 2
+timeline items: 1
+progress: 50% | 已完成 1 个，还有 1 个在推进。
+card first line: 2026-11-25 · 今日经验卡
+    shot 02-today-after-record.png (viewport 1440x1000)
+    shot 03-garden.png (viewport 1440x1000)
+    shot 04-plant-detail.png (viewport 1440x1000)
+db shown   : D:\ai-bridge\earn-work\hacksgiving-daylight\data-demo\daylight.db
+    shot 05-about-persistence.png (viewport 1440x1000)
+    shot 06-mobile-today.png (viewport 390x844)
+
+screenshots:
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\01-today-empty.png  (241605 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\02-today-after-record.png  (331876 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\03-garden.png  (168697 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\04-plant-detail.png  (141135 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\05-about-persistence.png  (235069 bytes)
+  D:\ai-bridge\earn-work\hacksgiving-daylight\screenshots\06-mobile-today.png  (612116 bytes)
+
+console problems: 0
+exit code: 0
+
+### screenshots (sha256, final)
+01-today-empty.png  3AEB8A9C54183D19B5F2693D01645ACBB139530005B7ED25C69B330F353F3900  241605 bytes
+02-today-after-record.png  AD6D88751574A2280B96B7A979E2845477A645BC16E901743DF2D73A8EFADE30  331876 bytes
+03-garden.png  D9A8F5D3F1FBE28133C4084296EAC01A2D86725B2984571A345943D94B351847  168697 bytes
+04-plant-detail.png  1EEE558B83D2C2224A45E742CD2CE20EE996EF8B59E0CC1044380DF46D57F8AE  141135 bytes
+05-about-persistence.png  A99F0556E73F75F5996912F3043E2FBF93DE1A5EC0E6872E54FE43B2D0F89FF1  235069 bytes
+06-mobile-today.png  648EAC053B7F5ED3F3096D3B7C678B50C3337DD105CC5AE89EB98195F38990D1  612116 bytes
+
+================================================================
+### ROUND 2026-11-25 09:20-09:35 — connector 默认超时 8s -> 60s / README 改为已部署 / start.sh
+指令：小修并更新文档；不部署、不 git、不含密钥。
+
+[1] coach.DEFAULT_TIMEOUT 常量 + Connector/from_env 默认超时
+    command : python -c 'import coach; print(coach.DEFAULT_TIMEOUT, coach.Connector("u","m").timeout, coach.Connector.from_env({"SPRITE_CONNECTOR_URL":"u","SPRITE_MODEL":"m"}).timeout)'
+    output  : 60.0 60.0 60.0
+    exit code: 0
+
+[2] 单元测试
+    command : python -m unittest discover -s tests -v
+    output  : Ran 36 tests in 21.011s / OK
+    exit code: 0
+    新增 3 项：
+      test_default_timeout_is_sixty_seconds   (常量=60.0，构造默认=60.0，from_env 默认=60.0)
+      test_transport_receives_default_timeout (假 transport 收到 60.0)
+      test_explicit_timeout_still_wins        (显式 timeout=5.0 仍生效)
+    原 33 项全部保留并通过。
+
+[3] start.sh 语法检查
+    command : "C:\Program Files\Git\bin\sh.exe" -n start.sh
+    output  : (无输出)
+    exit code: 0
+
+[4] start.sh 真跑（本机，PORT=8097）
+    注：本机 8080 已被另一个项目 Moonlit Mise 占用（127.0.0.1:8080 打到它），
+        故用 PORT 覆盖端口验证；脚本默认仍是 8080。
+    command : PORT=8097 sh start.sh
+    stdout  : Daylight: data=./data model=liquid/lfm-3-1.7b:free
+    GET /api/health -> 200
+      {"status": "ok",
+       "data_dir": "D:\\ai-bridge\\earn-work\\hacksgiving-daylight\\data",
+       "db_path": "D:\\ai-bridge\\earn-work\\hacksgiving-daylight\\data\\daylight.db",
+       "db_bytes": 176976,
+       "last_write": "2026-11-25T08:07:53",
+       "counts": {"goals": 2, "checkins": 2, "cards": 1},
+       "connector": {"configured": true,
+                     "model": "liquid/lfm-3-1.7b:free",
+                     "chat_url": "https://api.sprites.dev/v1/gateway/openrouter/1iRDaTyJ5VAi1NBRbliO1Q/v1/chat/completions",
+                     "list_url": "https://api.sprites.dev/v1/gateway/list"}}
+    结论：start.sh 能正确装配 connector URL + 模型，且 data_dir 落到项目本地 data/。
+    本次未向 connector 发任何请求（本机不访问外部网关），只验证装配与启动。
+
+[5] 端到端回归（真进程 + 真 HTTP + 重启持久化）
+    command : python scripts\e2e_check.py
+    output  : === 0 failure(s) ===   （重启后 goals=2 checkins=2 cards=1 streak=1）
+    exit code: 0
+
+[6] 变更文件 sha256
+    coach.py           37DF5DC8AAFAFF662972C5E391376EF9A8DA1661004F263CE82D88FF87B7F73D  11760 bytes
+    tests/test_app.py  F9ED9957CA3DC6ECB65F20B0C51F3B3BA0E2CFAC4AA1BB615123D056445A4A82  17185 bytes
+    README.md          A8C76AAA55E2209CA1199D161D35F89E99E7F2534D2FB20781464CFA4911AD92  10300 bytes
+    start.sh           262E98E7011992AC175594E36410ED7ED62202DB11DB3BCFE08C6639719B2798   1477 bytes

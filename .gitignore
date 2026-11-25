@@ -1,0 +1,14 @@
+# 部署与本地凭据，绝不入仓库
+tools/
+acl-recovery/
+
+# 运行时数据与缓存
+data/
+data-demo/
+__pycache__/
+*.pyc
+
+# 本地数据库
+*.db
+*.db-wal
+*.db-shm
